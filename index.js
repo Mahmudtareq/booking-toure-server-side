@@ -3,8 +3,9 @@ const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
 require('dotenv').config();
+
 const app = express();
-const port = 5000;
+const port =process.env.PORT || 5000;
 
 // middle ware
 app.use(cors())
@@ -25,8 +26,8 @@ async function run(){
         // get api
         app.get('/services',async (req,res)=>{
             const cursor = servicesCollection.find({})
-            const result = await cursor.toArray();
-            res.send(result);
+            const services = await cursor.toArray();
+            res.send(services);
         });
         // get single service
         app.get('/services/:id',async(req,res)=>{
@@ -35,13 +36,11 @@ async function run(){
             const query = {_id: ObjectId(id)}
             const service = await servicesCollection.findOne(query);
             res.json(service);
-
-
-        })
+        });
 
 
       //   post api
-          app.post('/services', async(req,res)=>{
+        app.post('/services', async(req,res)=>{
             const service = req.body;
             console.log('hit the api',service);
             const result = await servicesCollection.insertOne(service);
@@ -56,10 +55,6 @@ async function run(){
         const result = await servicesCollection.deleteOne(query);
         res.json(result);
     })
-
-
-
-
     }
     finally{
         // await client.close();
@@ -70,7 +65,7 @@ run().catch(console.dir);
 
 
 app.get('/',(req ,res)=>{
-     res.send('Hitting database')
+     res.send('Traveling Service is running');
  });
 app.listen(port ,(req,res)=>{
     console.log('Running Server is',port);
